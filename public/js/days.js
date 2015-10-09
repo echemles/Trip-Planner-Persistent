@@ -12,6 +12,17 @@ var daysModule = (function(){
       currentDay = days[0];
 
   function addDay () {
+    $.ajax({
+      method: "POST",
+      url: "/api/", //UPDATE WITH ACTUAL DAY
+      success: function(response){
+        console.log(response)
+      },
+      error: function(err){
+        console.log("ERROR", err)
+      }
+
+    })
     days.push({
       hotels: [],
       restaurants: [],
@@ -22,6 +33,16 @@ var daysModule = (function(){
   }
 
   function switchDay (index) {
+     $.ajax({
+      method: "GET",
+      url: "/api/", //UPDATE WITH PROPER ID
+      success: function(response){
+        console.log(response);
+      },
+      error: function(err){
+        console.log("Error in get request!", err);
+      }
+    })
     var $title = $('#day-title');
     if (index >= days.length) index = days.length - 1;
     $title.children('span').remove();
@@ -32,10 +53,22 @@ var daysModule = (function(){
   }
 
   function removeCurrentDay () {
+    console.log(currentDay);
     if (days.length === 1) return;
     var index = days.indexOf(currentDay);
     days.splice(index, 1);
     switchDay(index);
+
+    $.ajax({
+      method: "DELETE",
+      url: "/api/" + days.indexOf(currentDay), //UPDATE WITH PROPER ID
+      success: function(response){
+        console.log(response);
+      },
+      error: function(err){
+        console.log("Error!", err);
+      }
+    })
   }
 
   function renderDayButtons () {
@@ -52,12 +85,33 @@ var daysModule = (function(){
   }
 
   exports.addAttraction = function(attraction) {
+    $.ajax({
+      method: "PUT",
+      url: "/api/" + days.indexOf(currentDay) + "/" + attraction.type + "/" + attraction._id, //UPDATE WITH PROPER ID
+      success: function(response){
+        console.log(response);
+      },
+      error: function(err){
+        console.log("Error!", err);
+      }
+    })
     if (currentDay[attraction.type].indexOf(attraction) !== -1) return;
     currentDay[attraction.type].push(attraction);
     renderDay(currentDay);
   };
 
   exports.removeAttraction = function (attraction) {
+    console.log(attraction);
+    $.ajax({
+      method: "DELETE",
+      url: "/api/" + days.indexOf(currentDay) + "/" + attraction.type + "/" + attraction._id, //UPDATE WITH PROPER ID
+      success: function(response){
+        console.log(response);
+      },
+      error: function(err){
+        console.log("Error!", err);
+      }
+    })
     var index = currentDay[attraction.type].indexOf(attraction);
     if (index === -1) return;
     currentDay[attraction.type].splice(index, 1);
