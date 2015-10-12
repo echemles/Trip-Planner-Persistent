@@ -8,9 +8,22 @@ var daysModule = (function(){
         hotels:      [],
         restaurants: [],
         activities:  []
-      }],
-      currentDay = days[0];
+      }];
 
+  if(days_init.length >0) {
+    days = days_init;
+    days.map(function(day) {
+      delete day['__v'];
+      delete day['_id'];
+      delete day['number'];
+      day.hotels = [day.hotels];
+      return day;
+    });
+  }
+  
+  var currentDay = days[0];
+
+  
   function addDay () {
     $.ajax({
       method: "POST",
@@ -98,10 +111,12 @@ var daysModule = (function(){
     if (currentDay[attraction.type].indexOf(attraction) !== -1) return;
     currentDay[attraction.type].push(attraction);
     renderDay(currentDay);
+    console.log(days);
   };
 
   exports.removeAttraction = function (attraction) {
     console.log(attraction);
+    console.log(days.indexOf(currentDay) + "/" + attraction.type + "/" + attraction._id);
     $.ajax({
       method: "DELETE",
       url: "/api/" + days.indexOf(currentDay) + "/" + attraction.type + "/" + attraction._id, //UPDATE WITH PROPER ID
@@ -116,6 +131,7 @@ var daysModule = (function(){
     if (index === -1) return;
     currentDay[attraction.type].splice(index, 1);
     renderDay(currentDay);
+    console.log(days);
   };
 
   function renderDay(day) {
